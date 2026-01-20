@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Split PDF – Tech Harry</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<!-- PDF libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+</head>
+
+<body>
+
+<!-- BACKGROUND -->
+<video autoplay muted loop playsinline id="bg-video">
+  <source src="../assets/pdf.mp4" type="video/mp4">
+</video>
+
+<header class="navbar">
+  <a href="pdf-tools.html">← Back</a>
+  <a href="..\index.html">Home</a>
+</header>
+
+<section class="tool-container">
+
+<h2>Split PDF</h2>
+<p class="tool-desc">Preview PDF → choose page → split → download.</p>
+
+<!-- DRAG DROP -->
+<div class="upload-box" id="dropZone">
+  <p>📂 Drag & Drop PDF here</p>
+  <span>or</span><br><br>
+  <input type="file" id="fileInput" accept="application/pdf">
+</div>
+
+<!-- PREVIEW -->
+<div id="previewArea" style="margin:25px;text-align:center;"></div>
+
+<!-- PAGE NUMBER -->
+<div style="margin:20px 0;">
+  <label>Split after page:</label><br><br>
+  <input
+    type="number"
+    id="splitPage"
+    min="1"
+    style="padding:10px;width:120px;border-radius:8px;border:none;text-align:center;"
+    placeholder="Page #"
+  >
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar">
+  <div id="progress"></div>
+</div>
+
+<button class="action-btn" id="splitBtn" disabled>
+  Split PDF
+</button>
+
+<a class="download-btn" id="downloadBtn" style="display:none;">
+  Download Split PDF
+</a>
+
+</section>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const { PDFDocument } = PDFLib;
+
+const input = document.getElementById("fileInput");
+const dropZone = document.getElementById("dropZone");
+const preview = document.getElementById("previewArea");
+const splitBtn = document.getElementById("splitBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const splitPageInput = document.getElementById("splitPage");
+const progress = document.getElementById("progress");
+
+let pdfFile;
+let pageCount = 0;
+
+/* ---------- drag drop ---------- */
+
+dropZone.addEventListener("dragover", e => {
+  e.preventDefault();
+  dropZone.classList.add("drag");
+});
+
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("drag");
+});
+
+dropZone.addEventListener("drop", e => {
+  e.preventDefault();
+  dropZone.classList.remove("drag");
+  loadPDF(e.dataTransfer.files[0]);
+});
+
+input.addEventListener("change", () => {
+  loadPDF(input.files[0]);
+});
+
+/* ---------- load + preview ---------- */
+
+async function loadPDF(file) {
+  if (!file || file.type !== "application/pdf") return;
+
+  pdfFile = file;
+
+  const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
+  pageCount = pdf.numPages;
+
+  const page = await pdf.getPage(1);
+  const viewport = page.getViewport({ scale: 0.8 });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  await page.render({
+    canvasContext: canvas.getContext("2d"),
+    viewport
+  }).promise;
+
+  preview.innerHTML = "";
+  preview.appendChild(canvas);
+
+  splitBtn.disabled = false;
+}
+
+/* ---------- split ---------- */
+
+splitBtn.onclick = async () => {
+
+  const splitPage = parseInt(splitPageInput.value);
+
+  if (!splitPage || splitPage < 1 || splitPage >= pageCount) {
+    alert("Enter valid page number between 1 and " + (pageCount - 1));
+    return;
+  }
+
+  const srcPdf = await PDFDocument.load(await pdfFile.arrayBuffer());
+
+  const firstPart = await PDFDocument.create();
+  const secondPart = await PDFDocument.create();
+
+  for (let i = 0; i < pageCount; i++) {
+    const [page] = await firstPart.copyPages(srcPdf, [i]);
+
+    if (i < splitPage) {
+      firstPart.addPage(page);
+    } else {
+      const [p] = await secondPart.copyPages(srcPdf, [i]);
+      secondPart.addPage(p);
+    }
+
+    progress.style.width = ((i + 1) / pageCount) * 100 + "%";
+  }
+
+  const bytes = await firstPart.save();
+  const blob = new Blob([bytes], { type: "application/pdf" });
+
+  downloadBtn.href = URL.createObjectURL(blob);
+  downloadBtn.download = "split-part-1.pdf";
+  downloadBtn.style.display = "inline-block";
+};
+</script>
+<footer class="main-footer">
+
+  <div class="footer-links">
+    <a href="../pages/about.html">About</a>
+    <a href="../pages/contact.html">Contact</a>
+    <a href="../pages/privacy.html">Privacy Policy</a>
+    <a href="../pages/terms.html">Terms & Conditions</a>
+    <a href="../pages/disclaimer.html">Disclaimer</a>
+    <a href="../pages/cookies.html">Cookie Policy</a>
+
+  </div>
+
+  <p>© <span id="year"></span> Tech Harry. All rights reserved 2026.</p>
+
+</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+<script src="/js/darkmode.js"></script>
+</body>
+</html>

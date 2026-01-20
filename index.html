@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="description" content="Free online image and PDF tools. Compress images, convert PDFs, resize photos and more.">
+
+<meta name="keywords" content="image compressor, pdf tools, merge pdf, split pdf, image to pdf">
+
+<meta name="author" content="Tech Harry">
+
+<meta name="robots" content="index, follow">
+>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Tech Harry – Free Online AI Tools</title>
+
+<meta name="description"
+content="Free online image and PDF tools. Compress images, convert PDFs, resize photos and more. 100% secure and browser-based.">
+
+<link rel="stylesheet" href="css/style.css">
+
+<script defer src="js/main.js"></script>
+<script defer src="js/darkmode.js"></script>
+</head>
+
+<body>
+
+<!-- VIDEO BACKGROUND -->
+<video autoplay muted loop playsinline id="bg-video">
+  <source src="assets/background.mp4" type="video/mp4">
+</video>
+
+<!-- LOADER -->
+<div id="loader"></div>
+
+<!-- NAVBAR -->
+<header class="navbar" id="navbar">
+
+  <div class="logo">
+    <h1 class="logo-text">Tech Harry</h1>
+
+  </div>
+
+  <nav id="navMenu">
+    <a href="index.html">Home</a>
+  </nav>
+
+  <div class="nav-right">
+    <button class="dark-btn" onclick="toggleDark()">🌙</button>
+
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+</header>
+
+<!-- HERO -->
+<section class="hero">
+
+  <h2 class="logo-text">AI Powered Online Tools</h2>
+    <p class="hero-sub">
+  <h1 class="logo-text"></h1> Compress images, convert PDFs, resize files and more —  
+    directly in your browser.
+  </p>
+<!-- SEARCH BAR -->
+<section class="tool-search">
+  <div class="google-search">
+
+    <!-- search icon -->
+    <span class="search-icon">
+      <svg viewBox="0 0 24 24">
+        <path fill="#9aa0a6"
+          d="M15.5 14h-.79l-.28-.27
+          A6.471 6.471 0 0 0 16 9.5
+          6.5 6.5 0 1 0 9.5 16
+          a6.471 6.471 0 0 0 4.23-1.57
+          l.27.28v.79l5 4.99
+          L20.49 19l-4.99-5z
+          M9.5 14C7.01 14 5 11.99 5 9.5
+          S7.01 5 9.5 5
+          14 7.01 14 9.5
+          11.99 14 9.5 14z"/>
+      </svg>
+    </span>
+
+    <!-- input -->
+    <input
+      type="search"
+      id="searchInput"
+      placeholder="Search tools..."
+      onkeyup="searchTools()"
+      autocomplete="off"
+    >
+
+    <!-- mic button -->
+    <span class="mic-icon" id="voiceBtn" title="Voice search">
+      <img
+        src="https://www.gstatic.com/images/branding/googlemic/2x/googlemic_color_24dp.png"
+        alt="Mic"
+      >
+    </span>
+
+  </div>
+</section>
+<div id="searchStatus" class="search-status"></div>
+
+<section class="tools">
+
+<div class="hero-buttons">
+
+  <a href="tools/image-tools.html" class="tool-card image-tool">
+    <span class="icon">🖼️</span>
+    Image Tools
+  </a>
+
+  <a href="tools/pdf-tools.html" class="tool-card pdf-tool">
+    <span class="icon">📄</span>
+    PDF Tools
+  </a>
+
+</div>
+
+</section>
+<!-- FEATURES -->
+<section class="features">
+
+  <div class="feature-box">
+    <span>🔒</span>
+    <h3>100% Privacy</h3>
+    <p>Your files never leave your device.</p>
+  </div>
+
+  <div class="feature-box">
+    <span>⚡</span>
+    <h3>Fast Processing</h3>
+    <p>All tools work directly in your browser.</p>
+  </div>
+
+  <div class="feature-box">
+    <span>🛡️</span>
+    <h3>Secure Tools</h3>
+    <p>No uploads. No tracking. Fully safe.</p>
+  </div>
+
+  <div class="feature-box">
+    <span>☁️</span>
+    <h3>No Upload Stored</h3>
+    <p>Files are deleted instantly after use.</p>
+  </div>
+
+</section>
+
+</section>
+<footer class="main-footer">
+
+  <div class="footer-links">
+    <a href="pages/about.html">About</a>
+    <a href="pages/contact.html">Contact</a>
+    <a href="pages/privacy.html">Privacy Policy</a>
+    <a href="pages/terms.html">Terms & Conditions</a>
+    <a href="pages/disclaimer.html">Disclaimer</a>
+    <a href="pages/cookies.html">Cookie Policy</a>
+
+  </div>
+  <p>© <span id="year"></span> Tech Harry. All rights reserved 2026.</p>
+
+</footer>
+<!-- LISTENING POPUP -->
+<div id="listeningPopup" class="listening-popup">
+  <div class="listening-box">
+    <img
+      src="https://www.gstatic.com/images/branding/googlemic/2x/googlemic_color_24dp.png"
+      class="listening-mic"
+    >
+    <p>Listening…</p>
+  </div>
+</div>
+<!-- MOBILE FULLSCREEN VOICE UI -->
+<div id="mobileVoiceUI" class="mobile-voice-ui">
+  <div class="voice-container">
+
+    <img
+      src="https://www.gstatic.com/images/branding/googlemic/2x/googlemic_color_48dp.png"
+      class="voice-mic"
+      alt="Mic"
+    >
+
+    <p id="voiceStatus">Listening…</p>
+
+    <button id="cancelVoice" class="voice-cancel">Cancel</button>
+
+  </div>
+</div>
+
+</html>
+</body>
+

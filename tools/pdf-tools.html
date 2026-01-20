@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description" content="Free online PDF tools. Merge, split, convert and manage PDF files easily.">
+<meta name="keywords" content="pdf tools, merge pdf, split pdf, pdf to image, image to pdf">
+<meta name="author" content="Tech Harry">
+<meta name="robots" content="index, follow">
+
+<title>PDF Tools – Tech Harry</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<!-- VIDEO BACKGROUND -->
+<video autoplay muted loop playsinline id="bg-video">
+  <source src="../assets/bg1.mp4" type="video/mp4">
+</video>
+
+<!-- HEADER -->
+<header class="navbar">
+
+  <h1 class="logo-text">PDF Tools</h1>
+
+  <a href="/index.html">Home</a>
+
+  <!-- Dark mode button -->
+  <button id="darkToggle" class="dark-btn" title="Dark mode">
+    🌙
+  </button>
+
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h2>All PDF Tools</h2>
+  <p>Merge, split, convert and manage PDF files easily.</p>
+</section>
+
+<!-- PDF TOOLS GRID -->
+<section class="tools">
+<section class="tools-page">
+
+  <a href="pdf-merge.html" class="tool-card pdf-tool">
+    <span class="icon">📎</span>
+    Merge PDF
+  </a>
+
+  <a href="pdf-split.html" class="tool-card pdf-tool">
+    <span class="icon">✂️</span>
+    Split PDF
+  </a>
+
+  <a href="image-to-pdf.html" class="tool-card pdf-tool">
+    <span class="icon">🖼️</span>
+    Image → PDF
+  </a>
+
+  <a href="pdf-to-image.html" class="tool-card pdf-tool">
+    <span class="icon">📄</span>
+    PDF → Image
+  </a>
+
+</section>
+</section>
+
+<!-- FOOTER -->
+<footer class="main-footer">
+
+  <div class="footer-links">
+    <a href="../pages/about.html">About</a>
+    <a href="../pages/contact.html">Contact</a>
+    <a href="../pages/privacy.html">Privacy Policy</a>
+    <a href="../pages/terms.html">Terms & Conditions</a>
+    <a href="../pages/disclaimer.html">Disclaimer</a>
+    <a href="../pages/cookies.html">Cookie Policy</a>
+  </div>
+
+  <p>© <span id="year"></span> Tech Harry. All rights reserved 2026.</p>
+
+</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<!-- DARK MODE SCRIPT -->
+<script src="/js/darkmode.js"></script>
+
+</body>
+</html>

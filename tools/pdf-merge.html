@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Merge PDF – Tech Harry</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<!-- PDF LIBRARIES -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+</head>
+
+<body>
+
+<!-- BACKGROUND -->
+<video autoplay muted loop playsinline id="bg-video">
+  <source src="../assets/pdf.mp4" type="video/mp4">
+</video>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <a href="pdf-tools.html">← Back</a>
+  <a href="..\index.html">Home</a>
+</header>
+
+<section class="tool-container">
+
+<h2>Merge PDF</h2>
+<p class="tool-desc">Add multiple PDFs, preview them, merge and download.</p>
+
+<!-- UPLOAD -->
+<div class="upload-box">
+  <input type="file" id="fileInput" accept="application/pdf">
+</div>
+
+<!-- ADD BUTTON -->
+<button class="action-btn" id="addBtn" style="margin-top:15px;">
+  ➕ Add another PDF
+</button>
+
+<!-- PREVIEW -->
+<div id="previewArea"
+     style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:25px 0;">
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar">
+  <div id="progress"></div>
+</div>
+
+<!-- MERGE -->
+<button class="action-btn" id="mergeBtn" disabled>
+  Merge PDF
+</button>
+
+<!-- DOWNLOAD -->
+<a class="download-btn" id="downloadBtn" style="display:none;">
+  Download Merged PDF
+</a>
+
+</section>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const input = document.getElementById("fileInput");
+const addBtn = document.getElementById("addBtn");
+const previewArea = document.getElementById("previewArea");
+const mergeBtn = document.getElementById("mergeBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const progress = document.getElementById("progress");
+
+let pdfFiles = [];
+
+/* select file */
+input.addEventListener("change", async () => {
+  const file = input.files[0];
+  if (!file) return;
+
+  pdfFiles.push(file);
+  input.value = "";
+
+  const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
+  const page = await pdf.getPage(1);
+  const viewport = page.getViewport({ scale: 0.35 });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  await page.render({
+    canvasContext: canvas.getContext("2d"),
+    viewport
+  }).promise;
+
+  previewArea.appendChild(canvas);
+
+  if (pdfFiles.length >= 2) {
+    mergeBtn.disabled = false;
+  }
+});
+
+/* add more */
+addBtn.onclick = () => input.click();
+
+/* merge */
+mergeBtn.onclick = async () => {
+  const mergedPdf = await PDFLib.PDFDocument.create();
+
+  for (let i = 0; i < pdfFiles.length; i++) {
+    const bytes = await pdfFiles[i].arrayBuffer();
+    const pdf = await PDFLib.PDFDocument.load(bytes);
+    const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+    pages.forEach(p => mergedPdf.addPage(p));
+
+    progress.style.width =
+      ((i + 1) / pdfFiles.length) * 100 + "%";
+  }
+
+  const mergedBytes = await mergedPdf.save();
+  const blob = new Blob([mergedBytes], { type: "application/pdf" });
+
+  downloadBtn.href = URL.createObjectURL(blob);
+  downloadBtn.download = "merged.pdf";
+  downloadBtn.style.display = "inline-block";
+};
+</script>
+<footer class="main-footer">
+
+  <div class="footer-links">
+    <a href="../pages/about.html">About</a>
+    <a href="../pages/contact.html">Contact</a>
+    <a href="../pages/privacy.html">Privacy Policy</a>
+    <a href="../pages/terms.html">Terms & Conditions</a>
+    <a href="../pages/disclaimer.html">Disclaimer</a>
+    <a href="../pages/cookies.html">Cookie Policy</a>
+
+  </div>
+
+  <p>© <span id="year"></span> Tech Harry. All rights reserved 2026.</p>
+
+</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+<script src="/js/darkmode.js"></script>
+
+</body>
+</html>

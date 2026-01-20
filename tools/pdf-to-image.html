@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PDF to Image – Tech Harry</title>
+
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<!-- BACKGROUND -->
+<video autoplay muted loop playsinline id="bg-video">
+  <source src="../assets/pdf.mp4" type="video/mp4">
+</video>
+
+<header class="navbar">
+  <a href="pdf-tools.html">← Back</a>
+  <a href="..\index.html">Home</a>
+</header>
+
+<section class="tool-container">
+
+  <h2>PDF to Image</h2>
+  <p class="tool-desc">Convert PDF pages into images.</p>
+
+  <div class="upload-box" id="dropZone">
+    <p>📄 Drag & Drop PDF file</p>
+    <span>or</span><br><br>
+    <input type="file" id="fileInput" accept="application/pdf">
+  </div>
+
+  <div class="preview-list" id="previewList"></div>
+
+  <div class="progress-bar">
+    <div id="progress"></div>
+  </div>
+
+  <button class="action-btn" id="actionBtn" disabled>
+    Convert to Images
+  </button>
+
+  <a id="downloadBtn" class="download-btn" style="display:none;">
+    Download Images
+  </a>
+
+</section>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const input = document.getElementById("fileInput");
+const btn = document.getElementById("btn");
+const progress = document.getElementById("progress");
+const download = document.getElementById("downloadBtn");
+
+btn.onclick = async () => {
+  const pdf = await pdfjsLib.getDocument(URL.createObjectURL(input.files[0])).promise;
+  const page = await pdf.getPage(1);
+
+  const viewport = page.getViewport({ scale: 2 });
+  const canvas = document.createElement("canvas");
+
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  await page.render({
+    canvasContext: canvas.getContext("2d"),
+    viewport
+  }).promise;
+
+  progress.style.width = "100%";
+
+  download.href = canvas.toDataURL("image/png");
+  download.download = "page.png";
+  download.style.display = "inline-block";
+};
+</script>
+<footer class="main-footer">
+
+  <div class="footer-links">
+    <a href="../pages/about.html">About</a>
+    <a href="../pages/contact.html">Contact</a>
+    <a href="../pages/privacy.html">Privacy Policy</a>
+    <a href="../pages/terms.html">Terms & Conditions</a>
+    <a href="../pages/disclaimer.html">Disclaimer</a>
+    <a href="../pages/cookies.html">Cookie Policy</a>
+
+  </div>
+
+  <p>© <span id="year"></span> Tech Harry. All rights reserved 2026.</p>
+
+</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+<script src="/js/darkmode.js"></script>
+</body>
+</html>

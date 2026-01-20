@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>JPG to PNG – Tech Harry</title>
+
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<!-- VIDEO BACKGROUND -->
+<video autoplay muted loop playsinline id="bg-video">
+  <source src="../assets/bg1.mp4" type="video/mp4">
+</video>
+
+<header class="navbar">
+  <a href="image-tools.html">← Back</a>
+</header>
+
+<section class="tool-container">
+
+<h2>JPG to PNG Converter</h2>
+
+<!-- DRAG DROP -->
+<div class="upload-box" id="dropZone">
+  <p>📂 Drag & Drop JPG here</p>
+  <span>or click to upload</span>
+  <input type="file" id="fileInput" accept="image/jpeg,image/jpg" hidden>
+</div>
+
+<!-- PREVIEW -->
+<div class="preview">
+  <img id="previewImg">
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar">
+  <div id="progress"></div>
+</div>
+
+<!-- ACTION -->
+<button id="convertBtn" class="action-btn" disabled>
+Convert to PNG
+</button>
+
+<!-- DOWNLOAD -->
+<a id="downloadBtn" class="download-btn" style="display:none;">
+Download PNG
+</a>
+
+</section>
+
+<script src="../js/jpg-to-png.js"></script>
+<script src="/js/darkmode.js"></script>
+</body>
+</html>

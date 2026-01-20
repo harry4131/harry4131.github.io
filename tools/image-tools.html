@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta name="description" content="Free online image and PDF tools. Compress images, convert PDFs, resize photos and more.">
+
+<meta name="keywords" content="image compressor, pdf tools, merge pdf, split pdf, image to pdf">
+
+<meta name="author" content="Tech Harry">
+
+<meta name="robots" content="index, follow">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Image Tools – Tech Harry</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<!-- VIDEO BACKGROUND -->
+<video autoplay muted loop playsinline id="bg-video">
+  <source src="../assets/img-bg.mp4" type="video/mp4">
+</video>
+
+<!-- HEADER -->
+<header class="navbar">
+
+  <h1 class="logo-text">Image Tools</h1>
+
+  <a href="/index.html">Home</a>
+
+  <!-- Dark mode button -->
+  <button id="darkToggle" class="dark-btn" title="Dark mode">
+    🌙
+  </button>
+
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h2>All Image Tools</h2>
+  <p>Compress, resize and convert images instantly — no upload stored.</p>
+</section>
+
+<!-- IMAGE TOOLS GRID -->
+<section class="tools">
+<section class="tools-page">
+
+  <a href="image-compressor.html" class="tool-card image-tool">
+    <span class="icon">🗜️</span>
+    Image Compressor
+  </a>
+
+  <a href="image-resizer.html" class="tool-card image-tool">
+    <span class="icon">📐</span>
+    Image Resizer
+  </a>
+
+  <a href="jpg-png.html" class="tool-card image-tool">
+    <span class="icon">🖼️</span>
+    JPG → PNG
+  </a>
+
+  <a href="png-jpg.html" class="tool-card image-tool">
+    <span class="icon">🔁</span>
+    PNG → JPG
+  </a>
+
+</section>
+
+
+
+<!-- DARK MODE SCRIPT -->
+<script src="/js/darkmode.js"></script>
+<!-- FOOTER -->
+<footer class="main-footer">
+
+  <div class="footer-links">
+    <a href="../pages/about.html">About</a>
+    <a href="../pages/contact.html">Contact</a>
+    <a href="../pages/privacy.html">Privacy Policy</a>
+    <a href="../pages/terms.html">Terms & Conditions</a>
+    <a href="../pages/disclaimer.html">Disclaimer</a>
+    <a href="../pages/cookies.html">Cookie Policy</a>
+  </div>
+
+  <p>© <span id="year"></span> Tech Harry. All rights reserved 2026.</p>
+
+</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Image Resizer – Tech Harry</title>
+
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<video autoplay muted loop playsinline id="bg-video">
+  <source src="../assets/bg1.mp4" type="video/mp4">
+</video>
+
+<header class="navbar">
+  <a href="image-tools.html">← Back</a>
+  <a href="..\index.html">Home</a>
+</header>
+
+<section class="tool-container">
+
+  <h2>Image Resizer</h2>
+  <p class="tool-desc">Resize image dimensions easily.</p>
+
+  <div class="upload-box">
+    <p>📐 Drag & Drop Image</p>
+    <span>or</span><br><br>
+    <input type="file" id="fileInput" accept="image/*">
+  </div>
+
+  <div class="preview-list" id="previewList"></div>
+
+  <div class="progress-bar">
+    <div id="progress"></div>
+  </div>
+
+  <button class="action-btn" id="actionBtn" disabled>
+    Resize Image
+  </button>
+
+  <a id="downloadBtn" class="download-btn" style="display:none;">
+    Download Image
+  </a>
+
+</section>
+
+<script>
+const input = document.getElementById("fileInput");
+const preview = document.getElementById("previewList");
+const progress = document.getElementById("progress");
+const actionBtn = document.getElementById("actionBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+
+let file;
+
+input.onchange = () => {
+  file = input.files[0];
+  preview.innerHTML = "Image selected";
+  actionBtn.disabled = false;
+};
+
+actionBtn.onclick = () => {
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+
+  img.onload = () => {
+    const scale = 0.6;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width * scale;
+    canvas.height = img.height * scale;
+
+    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    progress.style.width = "100%";
+
+    canvas.toBlob(blob => {
+      downloadBtn.href = URL.createObjectURL(blob);
+      downloadBtn.download = "resized.jpg";
+      downloadBtn.style.display = "inline-block";
+    }, "image/jpeg", 0.9);
+  };
+};
+</script>
+
+<footer class="main-footer">
+
+  <div class="footer-links">
+    <a href="../pages/about.html">About</a>
+    <a href="../pages/contact.html">Contact</a>
+    <a href="../pages/privacy.html">Privacy Policy</a>
+    <a href="../pages/terms.html">Terms & Conditions</a>
+    <a href="../pages/disclaimer.html">Disclaimer</a>
+    <a href="../pages/cookies.html">Cookie Policy</a>
+
+  </div>
+
+  <p>© <span id="year"></span> Tech Harry. All rights reserved 2026.</p>
+
+</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+<script src="/js/darkmode.js"></script>
+
+</body>
+</html>
