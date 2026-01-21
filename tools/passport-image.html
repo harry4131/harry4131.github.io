@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Photo & Signature Tool – Tech Harry</title>
+
+<style>
+*{box-sizing:border-box;}
+
+:root{
+  --neon:#00eaff;
+  --neon2:#7c7cff;
+  --glass:rgba(255,255,255,.08);
+}
+
+body{
+  margin:0;
+  font-family:"Segoe UI",system-ui,Arial;
+  color:#fff;
+  min-height:100vh;
+  overflow-x:hidden;
+  background:#020617;
+}
+
+/* background overlay */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 20% 20%, #0ff2, transparent 40%),
+    radial-gradient(circle at 80% 30%, #7c7cff22, transparent 45%),
+    rgba(2,6,23,.35);
+  z-index:-1;
+}
+
+/* fluid canvas */
+#fluid-bg{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+}
+
+.container{
+  max-width:980px;
+  margin:auto;
+  padding:40px 20px;
+}
+
+.card{
+  background:var(--glass);
+  backdrop-filter:blur(18px);
+  border-radius:22px;
+  padding:30px;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 0 40px #000;
+}
+
+.header{text-align:center;margin-bottom:35px;}
+
+.header h1{
+  margin:0;
+  font-size:32px;
+  color:#00eaff;
+  text-shadow:0 0 10px rgba(0,234,255,.6),
+              0 0 25px rgba(124,124,255,.4);
+}
+
+.header p{opacity:.8;margin-top:6px;}
+
+.tabs{display:flex;gap:12px;margin-bottom:25px;}
+
+.tabs button{
+  flex:1;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:#0b1220;
+  color:#fff;
+  cursor:pointer;
+}
+
+.tabs button.active{
+  background:linear-gradient(135deg,var(--neon),var(--neon2));
+  color:#000;
+  font-weight:600;
+}
+
+.upload{
+  border:2px dashed rgba(255,255,255,.25);
+  border-radius:18px;
+  padding:40px;
+  text-align:center;
+  cursor:pointer;
+}
+
+.upload input{display:none;}
+
+.controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  margin:28px 0;
+}
+
+select,button{
+  padding:14px;
+  border-radius:14px;
+  border:none;
+  font-size:15px;
+}
+
+select{background:#0b1220;color:#fff;}
+
+button{
+  background:linear-gradient(135deg,var(--neon),var(--neon2));
+  font-weight:600;
+  cursor:pointer;
+  color:#000;
+}
+
+canvas.tool{
+  display:block;
+  margin:25px auto;
+  border-radius:14px;
+  border:1px solid var(--neon);
+  box-shadow:0 0 20px #00eaff55;
+}
+
+a.download{
+  display:none;
+  text-align:center;
+  margin-top:18px;
+  font-size:18px;
+  color:#00ffcc;
+  text-decoration:none;
+}
+
+.hidden{display:none;}
+
+/* footer */
+.main-footer{
+  margin-top:60px;
+  padding:30px 15px;
+  text-align:center;
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(10px);
+  border-top:1px solid rgba(255,255,255,.1);
+}
+
+.footer-links a{
+  color:#00eaff;
+  margin:0 10px;
+  font-size:14px;
+  text-decoration:none;
+}
+
+.footer-links a:hover{text-decoration:underline;}
+
+.main-footer p{font-size:13px;opacity:.8;}
+
+@media(max-width:760px){
+  .controls{grid-template-columns:1fr;}
+  .footer-links a{display:inline-block;margin:6px;}
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="fluid-bg"></canvas>
+
+<div class="container">
+<div class="card">
+
+<div class="header">
+  <h1>Indian Exam Photo Tool</h1>
+  <p>Smart resize • Exact ratio • Auto KB • Signature crop</p>
+</div>
+
+<div class="tabs">
+  <button id="photoTab" class="active">Photo Tool</button>
+  <button id="signTab">Signature Tool</button>
+</div>
+
+<!-- PHOTO -->
+<div id="photoSection">
+
+  <div class="upload" id="photoDrop">
+   📂 Drag & Drop Photo<br>or click
+    <input type="file" id="photoInput" accept="image/*">
+  </div>
+
+  <div class="controls">
+    <select id="exam">
+      <option value="">Select Exam</option>
+      <option value="passport">Passport</option>
+      <option value="ssc">SSC / Army</option>
+      <option value="neet">NEET / JEE</option>
+      <option value="pan">PAN / Aadhaar</option>
+    </select>
+
+    <button id="photoBtn">Generate Photo</button>
+  </div>
+
+  <canvas id="photoCanvas" class="tool"></canvas>
+  <a id="photoDownload" class="download">Download Photo</a>
+
+</div>
+
+<!-- SIGNATURE -->
+<div id="signSection" class="hidden">
+
+  <div class="upload" id="signDrop">
+    📂 Drag & Drop Signature<br>or click
+    <input type="file" id="signInput" accept="image/*">
+  </div>
+
+  <div class="controls">
+    <select id="signSize">
+      <option value="300x80">300 × 80</option>
+      <option value="350x100">350 × 100</option>
+      <option value="400x100">400 × 100</option>
+    </select>
+
+    <button id="signBtn">Generate Signature</button>
+  </div>
+
+  <canvas id="signCanvas" class="tool"></canvas>
+  <a id="signDownload" class="download">Download Signature</a>
+
+</div>
+
+</div>
+</div>
+
+<footer class="main-footer">
+  <div class="footer-links">
+    <a href="../pages/about.html">About</a>
+    <a href="../pages/contact.html">Contact</a>
+    <a href="../pages/privacy.html">Privacy Policy</a>
+    <a href="../pages/terms.html">Terms & Conditions</a>
+    <a href="../pages/disclaimer.html">Disclaimer</a>
+    <a href="../pages/cookies.html">Cookie Policy</a>
+  </div>
+  <p>© <span id="year"></span> Tech Harry. All rights reserved.</p>
+</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+
+/* ================= FLUID BACKGROUND ================= */
+const bg=document.getElementById("fluid-bg");
+const ctx=bg.getContext("2d");
+let w,h;
+function resize(){w=bg.width=innerWidth;h=bg.height=innerHeight;}
+addEventListener("resize",resize);resize();
+
+const grid=70;
+let cols,rows,field;
+function init(){
+  cols=Math.floor(w/grid)+1;
+  rows=Math.floor(h/grid)+1;
+  field=Array(cols*rows).fill().map(()=>({x:0,y:0}));
+}
+init();
+
+let mouse={x:0,y:0,px:0,py:0};
+addEventListener("mousemove",e=>{
+  mouse.x=e.clientX;mouse.y=e.clientY;
+});
+
+function update(){
+  const mx=Math.floor(mouse.x/grid);
+  const my=Math.floor(mouse.y/grid);
+  if(mx>=0&&my>=0&&mx<cols&&my<rows){
+    const i=mx+my*cols;
+    field[i].x+=(mouse.x-mouse.px)*0.12;
+    field[i].y+=(mouse.y-mouse.py)*0.12;
+  }
+  mouse.px=mouse.x;mouse.py=mouse.y;
+  field.forEach(f=>{f.x*=0.9;f.y*=0.9;});
+}
+
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  for(let y=0;y<rows;y++){
+    for(let x=0;x<cols;x++){
+      const i=x+y*cols,f=field[i];
+      ctx.beginPath();
+      ctx.moveTo(x*grid,y*grid);
+      ctx.lineTo(x*grid+f.x*2.2,y*grid+f.y*2.2);
+      ctx.strokeStyle="rgba(0,234,255,.85)";
+      ctx.lineWidth=2;
+      ctx.shadowColor="rgba(0,234,255,1)";
+      ctx.shadowBlur=18;
+      ctx.stroke();
+    }
+  }
+  update();
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* ================= TOOLS ================= */
+photoTab.onclick=()=>{photoTab.classList.add("active");signTab.classList.remove("active");
+photoSection.classList.remove("hidden");signSection.classList.add("hidden");};
+
+signTab.onclick=()=>{signTab.classList.add("active");photoTab.classList.remove("active");
+signSection.classList.remove("hidden");photoSection.classList.add("hidden");};
+
+/* photo */
+const standards={
+ passport:{w:413,h:531,kb:200},
+ ssc:{w:240,h:320,kb:50},
+ neet:{w:200,h:230,kb:200},
+ pan:{w:213,h:213,kb:50}
+};
+
+let photoFile=null;
+photoDrop.onclick=()=>photoInput.click();
+photoInput.onchange=()=>photoFile=photoInput.files[0];
+
+photoBtn.onclick=async()=>{
+ const type=exam.value;
+ if(!photoFile||!type)return alert("Upload photo & select exam");
+
+ const img=new Image();
+ img.src=URL.createObjectURL(photoFile);
+
+ img.onload=async()=>{
+  const {w,h,kb}=standards[type];
+  const c=photoCanvas,ct=c.getContext("2d");
+  c.width=w;c.height=h;
+
+  const r1=img.width/img.height,r2=w/h;
+  let sx,sy,sw,sh;
+  if(r1>r2){sh=img.height;sw=sh*r2;sx=(img.width-sw)/2;sy=0;}
+  else{sw=img.width;sh=sw/r2;sx=0;sy=(img.height-sh)/2;}
+
+  ct.drawImage(img,sx,sy,sw,sh,0,0,w,h);
+
+  let q=.92,b;
+  do{b=await new Promise(r=>c.toBlob(r,"image/jpeg",q));q-=.05;}
+  while(b.size/1024>kb&&q>.3);
+
+  photoDownload.href=URL.createObjectURL(b);
+  photoDownload.download="photo.jpg";
+  photoDownload.textContent="Download Photo ("+Math.round(b.size/1024)+" KB)";
+  photoDownload.style.display="block";
+ };
+};
+
+/* signature */
+let signFile=null;
+signDrop.onclick=()=>signInput.click();
+signInput.onchange=()=>signFile=signInput.files[0];
+
+signBtn.onclick=()=>{
+ if(!signFile)return alert("Upload signature");
+ const [w,h]=signSize.value.split("x").map(Number);
+ const img=new Image();
+ img.src=URL.createObjectURL(signFile);
+
+ img.onload=()=>{
+  const c=signCanvas,ct=c.getContext("2d");
+  c.width=w;c.height=h;
+  ct.fillStyle="#fff";
+  ct.fillRect(0,0,w,h);
+
+  const r=Math.min(w/img.width,h/img.height);
+  const nw=img.width*r,nh=img.height*r;
+  ct.drawImage(img,(w-nw)/2,(h-nh)/2,nw,nh);
+
+  c.toBlob(b=>{
+    signDownload.href=URL.createObjectURL(b);
+    signDownload.download="signature.jpg";
+    signDownload.style.display="block";
+  },"image/jpeg",.95);
+ };
+};
+</script>
+
+<script src="/js/darkmode.js"></script>
+
+</body>
+</html>
