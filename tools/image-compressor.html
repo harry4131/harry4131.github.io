@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Image Compressor – Tech Harry</title>
 
 <link rel="stylesheet" href="../css/style.css">
+
 </head>
 
 <body>
@@ -17,35 +18,62 @@
 </video>
 
 <header class="navbar">
-    <a href="image-tools.html">← Back</a>
-  <a href="..\index.html">Home</a>
-
+  <a href="image-tools.html">← Back</a>
+  <a href="../index.html">Home</a>
 </header>
 
 <section class="tool-container">
 
-  <h2>Image Compressor</h2>
-  <p class="tool-desc">Reduce image file size without quality loss.</p>
+<h2>Image Compressor</h2>
+<p class="tool-desc">Reduce image file size without quality loss.</p>
 
-  <div class="upload-box">
-    <p>🖼️ Drag & Drop Image</p>
-    <span>or</span><br><br>
-    <input type="file" id="fileInput" accept="image/*">
-  </div>
+<div class="upload-box">
+  <p>🖼️ Drag & Drop Image</p>
+  <span>or</span><br><br>
+  <input type="file" id="fileInput" accept="image/*">
+</div>
 
-  <div class="preview-list" id="previewList"></div>
+<div class="preview-list" id="previewList"></div>
 
-  <div class="progress-bar">
-    <div id="progress"></div>
-  </div>
+<!-- USER SETTINGS -->
+<div style="margin:15px 0;text-align:center;">
 
-  <button class="action-btn" id="actionBtn" disabled>
-    Compress Image
-  </button>
+  <label>
+    Target size (KB):
+    <input type="number"
+           id="targetSize"
+           value="300"
+           min="50"
+           max="10000"
+           style="width:90px;padding:4px;">
+  </label>
 
-  <a id="downloadBtn" class="download-btn" style="display:none;">
-    Download Image
-  </a>
+  <br><br>
+
+  <label>
+    Quality:
+    <input type="range"
+           id="qualityRange"
+           min="0.1"
+           max="1"
+           step="0.05"
+           value="0.75">
+    <span id="qValue">0.75</span>
+  </label>
+
+</div>
+
+<div class="progress-bar">
+  <div id="progress"></div>
+</div>
+
+<button class="action-btn" id="actionBtn" disabled>
+  Compress Image
+</button>
+
+<a id="downloadBtn" class="download-btn" style="display:none;">
+  Download Image
+</a>
 
 </section>
 
@@ -56,104 +84,111 @@ const progress = document.getElementById("progress");
 const actionBtn = document.getElementById("actionBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 
+const targetSizeInput = document.getElementById("targetSize");
+const qualityRange = document.getElementById("qualityRange");
+const qValue = document.getElementById("qValue");
+
 let originalFile = null;
-let compressedBlob = null;
+
+qualityRange.oninput = () => {
+  qValue.textContent = qualityRange.value;
+};
 
 input.addEventListener("change", () => {
-    originalFile = input.files[0];
-    if (!originalFile) return;
+  originalFile = input.files[0];
+  if (!originalFile) return;
 
-    preview.innerHTML = `
-        Original: ${(originalFile.size / 1024 / 1024).toFixed(2)} MB
-    `;
+  preview.innerHTML =
+    "Original: " +
+    (originalFile.size / 1024).toFixed(1) +
+    " KB";
 
-    progress.style.width = "0%";
-    downloadBtn.style.display = "none";
-    actionBtn.disabled = false;
+  progress.style.width = "0%";
+  downloadBtn.style.display = "none";
+  actionBtn.disabled = false;
 });
 
-actionBtn.addEventListener("click", () => {
-    if (!originalFile) return;
+actionBtn.onclick = () => {
+  if (!originalFile) return;
 
-    progress.style.width = "10%";
+  const TARGET_KB = parseInt(targetSizeInput.value);
+  let quality = parseFloat(qualityRange.value);
 
-    const img = new Image();
-    const imgURL = URL.createObjectURL(originalFile);
-    img.src = imgURL;
+  const img = new Image();
+  const imgURL = URL.createObjectURL(originalFile);
+  img.src = imgURL;
 
-    img.onload = () => {
+  img.onload = async () => {
 
-        // ✅ REAL COMPRESSION SETTINGS
-        const MAX_WIDTH = 1280;
-        const MAX_HEIGHT = 1280;
-        const QUALITY = 0.65;
+    let width = img.width;
+    let height = img.height;
 
-        let width = img.width;
-        let height = img.height;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
 
-        if (width > MAX_WIDTH || height > MAX_HEIGHT) {
-            const ratio = Math.min(
-                MAX_WIDTH / width,
-                MAX_HEIGHT / height
-            );
-            width = Math.round(width * ratio);
-            height = Math.round(height * ratio);
-        }
+    progress.style.width = "20%";
 
-        progress.style.width = "40%";
+    let blob;
 
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
+    do {
+      canvas.width = width;
+      canvas.height = height;
 
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
 
-        progress.style.width = "70%";
+      blob = await new Promise(resolve =>
+        canvas.toBlob(resolve, "image/jpeg", quality)
+      );
 
-        canvas.toBlob(blob => {
-            compressedBlob = blob;
+      if (blob.size / 1024 > TARGET_KB) {
+        quality -= 0.05;
+        width *= 0.95;
+        height *= 0.95;
+      }
 
-            progress.style.width = "100%";
+    } while (
+      blob.size / 1024 > TARGET_KB &&
+      quality > 0.2
+    );
 
-            const newSize =
-                (blob.size / 1024 / 1024).toFixed(2);
+    progress.style.width = "100%";
 
-            preview.innerHTML += `
-                <br>Compressed: ${newSize} MB
-            `;
+    preview.innerHTML +=
+      "<br>Compressed: " +
+      (blob.size / 1024).toFixed(1) +
+      " KB" +
+      "<br>Quality used: " +
+      quality.toFixed(2);
 
-            downloadBtn.href = URL.createObjectURL(blob);
-            downloadBtn.download = "compressed-image.jpg";
-            downloadBtn.style.display = "inline-block";
+    downloadBtn.href = URL.createObjectURL(blob);
+    downloadBtn.download = "compressed.jpg";
+    downloadBtn.style.display = "inline-block";
 
-            URL.revokeObjectURL(imgURL);
-
-        }, "image/jpeg", QUALITY);
-    };
-});
+    URL.revokeObjectURL(imgURL);
+  };
+};
 </script>
-
 
 <footer class="main-footer">
 
-  <div class="footer-links">
-    <a href="../pages/about.html">About</a>
-    <a href="../pages/contact.html">Contact</a>
-    <a href="../pages/privacy.html">Privacy Policy</a>
-    <a href="../pages/terms.html">Terms & Conditions</a>
-    <a href="../pages/disclaimer.html">Disclaimer</a>
-    <a href="../pages/cookies.html">Cookie Policy</a>
+<div class="footer-links">
+  <a href="../pages/about.html">About</a>
+  <a href="../pages/contact.html">Contact</a>
+  <a href="../pages/privacy.html">Privacy Policy</a>
+  <a href="../pages/terms.html">Terms & Conditions</a>
+  <a href="../pages/disclaimer.html">Disclaimer</a>
+  <a href="../pages/cookies.html">Cookie Policy</a>
+</div>
 
-  </div>
-
-  <p>© <span id="year"></span> Tech Harry. All rights reserved 2026.</p>
+<p>© <span id="year"></span> Tech Harry. All rights reserved 2026.</p>
 
 </footer>
 
 <script>
-document.getElementById("year").textContent = new Date().getFullYear();
+document.getElementById("year").textContent =
+  new Date().getFullYear();
 </script>
+
 <script src="/js/darkmode.js"></script>
 
 </body>
